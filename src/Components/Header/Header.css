@@ -1,0 +1,381 @@
+/* Base Header Styles */
+.site-header {
+  width: 100%;
+  background: var(--bg-main);
+  border-bottom: 1px solid var(--border-color);
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  z-index: 1000;
+}
+
+.header-content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 1. Top Bar */
+.header-top {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  padding: 8px 0;
+}
+
+.top-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: var(--muted-foreground);
+}
+
+.divider {
+  color: var(--border-color);
+}
+
+.trending-ticker {
+  display: flex;
+  gap: 8px;
+}
+
+.trending-label {
+  font-weight: 700;
+  color: var(--primary-color);
+  text-transform: uppercase;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+}
+
+.social-links-mini {
+  display: flex;
+  gap: 12px;
+}
+
+.social-links-mini a {
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.social-links-mini a:hover {
+  color: var(--primary-color);
+}
+
+.social-links-mini img {
+  width: 14px;
+  height: 14px;
+  filter: invert(1) brightness(2); /* White icons for dark mode */
+}
+
+/* 2. Main Branding Bar */
+.header-main {
+  padding: 30px 0;
+  background: var(--bg-main);
+}
+
+.main-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.brand-tagline {
+  color: var(--muted-foreground);
+  font-size: 1rem;
+  margin: 5px 0 0 0;
+}
+
+.header-right-area {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Buttons in Header */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: #000;
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px hsl(var(--primary) / 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border-color);
+}
+
+.btn-outline:hover {
+  border-color: var(--foreground);
+}
+
+/* 3. Navigation Bar */
+.header-nav {
+  background: var(--card-background);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+}
+
+.mobile-menu-toggle {
+  display: none; /* Hidden on desktop */
+}
+
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 30px;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: var(--foreground);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 14px 0;
+  display: block;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.search-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--foreground);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.search-toggle-btn:hover {
+  color: var(--primary-color);
+}
+
+/* Mobile Responsiveness */
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  /* Top Bar */
+  .header-top {
+    font-size: 0.75rem;
+    padding: 6px 0;
+  }
+
+  .top-bar-content {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .top-left {
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .trending-ticker {
+    font-size: 0.8rem;
+  }
+  
+  .top-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .social-links-mini {
+    gap: 15px;
+  }
+
+  .social-links-mini img {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Main Branding Bar */
+  .header-main {
+    padding: 20px 0;
+  }
+  
+  .main-bar-content {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .brand-logo {
+    font-size: 1.8rem;
+  }
+
+  .brand-tagline {
+    font-size: 0.85rem;
+  }
+  
+  .header-right-area {
+    width: 100%;
+  }
+  
+  .action-buttons {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Navigation Bar */
+  .mobile-menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--foreground);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background: var(--card-background);
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links li a {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    border-bottom-width: 2px;
+    width: 100%;
+  }
+  
+  .nav-links li:last-child a {
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .nav-links li a:hover,
+  .nav-links li a.active {
+    background: var(--bg-secondary);
+    border-bottom-color: var(--primary-color);
+  }
+
+  .search-toggle-btn {
+    font-size: 1rem;
+    padding: 10px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .header-content-wrapper {
+    padding: 0 15px;
+  }
+
+  .brand-logo {
+    font-size: 1.5rem;
+  }
+
+  .brand-tagline {
+    font-size: 0.8rem;
+  }
+
+  .btn {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+  }
+
+  .trending-ticker {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
