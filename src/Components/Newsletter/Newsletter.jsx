@@ -1,19 +1,32 @@
 import React, { useState } from 'react';
 import './Newsletter.css';
+import { subscribeNewsletter } from '../../services/api';
 
 const Newsletter = () => {
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState(null);
+    const [message, setMessage] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setMessage('');
         if (email) {
-            // Simulate API call
             setStatus('loading');
-            setTimeout(() => {
-                setStatus('success');
-                setEmail('');
-            }, 1500);
+            try {
+                const response = await subscribeNewsletter(email);
+                if (response.data.success) {
+                    setStatus('success');
+                    setMessage('🎉 Thanks for subscribing!');
+                    setEmail('');
+                } else {
+                    setStatus('error');
+                    setMessage(response.data.message || 'Subscription failed. Please try again.');
+                }
+            } catch (error) {
+                console.error("Newsletter subscription error:", error);
+                setStatus('error');
+                setMessage(error.response?.data?.message || 'An error occurred. Please try again later.');
+            }
         }
     };
 
@@ -41,7 +54,10 @@ const Newsletter = () => {
                             </button>
                         </div>
                         {status === 'success' && (
-                            <p className="success-message">🎉 Thanks for subscribing!</p>
+                            <p className="success-message">{message}</p>
+                        )}
+                        {status === 'error' && (
+                            <p className="error-message" style={{ color: '#ff6b6b', marginTop: '10px' }}>{message}</p>
                         )}
                     </form>
 

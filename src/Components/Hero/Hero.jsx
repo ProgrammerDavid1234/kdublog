@@ -1,153 +1,181 @@
-import React, { useState } from 'react'
-import './Hero.css'
-import random from "../../assets/random.jpeg"
-
-const newsItems = [
-    {
-        id: 1,
-        title: "NACOS Annual Tech Summit 2026 Announced",
-        subtitle: "Join us for the biggest tech event on campus.",
-        image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    },
-    {
-        id: 2,
-        title: "Coding Bootcamp Registration Now Open",
-        subtitle: "Master Full-Stack Development in 6 weeks.",
-        image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    },
-    {
-        id: 3,
-        title: "KDU Robotics Team Wins National Competition",
-        subtitle: "A proud moment for our department.",
-        image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    },
-    {
-        id: 4,
-        title: "New AI Research Lab Inaugurated",
-        subtitle: "Advancing machine learning research at KDU.",
-        image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    },
-    {
-        id: 5,
-        title: "Career Talk: Navigating the Tech Industry",
-        subtitle: "Insights from industry veterans.",
-        image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    }
-];
-
-const sidebarItems = [
-    {
-        id: 1,
-        category: "ACHIEVEMENTS",
-        date: "Jan 12, 2026",
-        title: "Student Spotlight: Hackathon Winners",
-        image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    },
-    {
-        id: 2,
-        category: "DEPARTMENT",
-        date: "Jan 10, 2026",
-        title: "Curriculum Update: New Cyber Security Course",
-        image: "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    },
-    {
-        id: 3,
-        category: "EVENTS",
-        date: "Jan 08, 2026",
-        title: "Upcoming Workshop: Introduction to Cloud Computing",
-        image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    },
-    {
-        id: 4,
-        category: "ALUMNI",
-        date: "Jan 05, 2026",
-        title: "Alumni Network Launch: Connect with past graduates",
-        image: "https://images.unsplash.com/photo-1521791136064-7985c2717883?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-    }
-]
+import React, { useState, useEffect } from "react";
+import "./Hero.css";
+import { getHomepageData } from "../../services/api";
 
 const Hero = () => {
-    const [startIndex, setStartIndex] = useState(0);
-    const itemsToShow = 3;
+    // State for dynamic data
+    const [slides, setSlides] = useState([]);
+    const [featuredPost, setFeaturedPost] = useState(null);
+    const [announcements, setAnnouncements] = useState([]);
+    const [upcomingEvents, setUpcomingEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const handleNext = () => {
-        setStartIndex((prev) => (prev + 1) % newsItems.length);
+    // State for slider interactions
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        const fetchHeroData = async () => {
+            try {
+                const response = await getHomepageData();
+                if (response.data.success) {
+                    const { trendingParams, featuredParams, announcements, upcomingEvents } = response.data.data;
+
+                    // Helper: map post to slide format
+                    const mapPostToSlide = (post) => ({
+                        id: post._id,
+                        image: post.coverImage || "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+                        category: post.category?.name || "Tech",
+                        date: new Date(post.createdAt).toLocaleDateString(),
+                        title: post.title,
+                        link: `/posts/${post._id}`
+                    });
+
+                    setSlides((trendingParams || []).map(mapPostToSlide));
+
+                    if (featuredParams && featuredParams.length > 0) {
+                        setFeaturedPost(mapPostToSlide(featuredParams[0]));
+                    }
+
+                    setAnnouncements((announcements || []).map(a => ({
+                        id: a._id,
+                        text: a.title, // Assuming announcement has title
+                        time: "Just now" // Placeholder, maybe redundant if date exists
+                    })));
+
+                    setUpcomingEvents((upcomingEvents || []).map(e => ({
+                        id: e._id,
+                        day: new Date(e.date).getDate(),
+                        month: new Date(e.date).toLocaleString('default', { month: 'short' }),
+                        title: e.title,
+                        location: e.location || "Main Hall"
+                    })));
+                }
+            } catch (err) {
+                console.error("Error fetching hero data:", err);
+                setError("Failed to load content.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHeroData();
+    }, []);
+
+
+    const nextSlide = () => {
+        setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
     };
 
-    const handlePrev = () => {
-        setStartIndex((prev) => (prev - 1 + newsItems.length) % newsItems.length);
+    const prevSlide = () => {
+        setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
     };
 
-    const visibleItems = [];
-    for (let i = 0; i < itemsToShow; i++) {
-        visibleItems.push(newsItems[(startIndex + i) % newsItems.length]);
-    }
+    // Auto-advance slider
+    useEffect(() => {
+        if (slides.length > 1) {
+            const timer = setInterval(nextSlide, 5000);
+            return () => clearInterval(timer);
+        }
+    }, [slides, currentSlide]);
+
+    if (loading) return <div className="hero-loading">Loading content...</div>;
+    if (error) return <div className="hero-error">{error}</div>;
 
     return (
-        <div className="hero-container" id="home">
-            <div className="slider-wrapper">
-                <button className="nav-button prev" onClick={handlePrev}>&#8249;</button>
-                <div className="slider-content">
-                    {visibleItems.map((item, index) => (
-                        <div key={`${item.id}-${index}`} className="news-card">
-                            <img src={item.image} alt={item.title} className="news-image" />
-                            <div className="news-content">
-                                <h3 className="news-title">{item.title}</h3>
-                                <p className="news-subtitle">{item.subtitle}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <button className="nav-button next" onClick={handleNext}>&#8250;</button>
-            </div>
-
-            <div className="hero-main-content">
-
-                <div className="featured-article">
-                    <img src={random} alt="Featured" className="featured-bg" />
-                    <div className="featured-overlay">
-                        <div className="play-button">
-                            <div className="play-icon">▶</div>
-                        </div>
-                        <div className="featured-text">
-                            <div className="meta-tag">
-                                <span className="category">NACOS</span>
-                                <span className="date"> / Jan 11, 2026</span>
-                            </div>
-                            <h1 className="featured-title">Welcome to the NACOS KDU Chapter Blog</h1>
-                            <p className="featured-desc">Stay updated with the latest news, events, and student achievements from the Department of Computer Science at KolaDaisi University.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="sidebar-section">
-                    <div className="sidebar-tabs">
-                        <button className="tab active">RELATED</button>
-                        <button className="tab">RELATED</button>
-                        <button className="tab">POPULAR</button>
-                    </div>
-
-                    <div className="sidebar-list">
-                        {sidebarItems.map(item => (
-                            <div key={item.id} className="sidebar-item">
-                                <div className="sidebar-img-container">
-                                    <img src={item.image} alt={item.title} />
-                                </div>
-                                <div className="sidebar-text">
-                                    <div className="sidebar-meta">
-                                        <span className="cat">{item.category}</span>
-                                        <span className="date"> / {item.date}</span>
+        <section className="hero-section">
+            <div className="container hero-container">
+                {/* Left Column: Immersive Slider */}
+                <div className="hero-main">
+                    {slides.length > 0 ? (
+                        <div className="hero-slider">
+                            {slides.map((slide, index) => (
+                                <div
+                                    key={slide.id}
+                                    className={`slide ${index === currentSlide ? "active" : ""}`}
+                                    style={{ backgroundImage: `url(${slide.image})` }}
+                                >
+                                    <div className="slide-overlay">
+                                        <div className="slide-content animate-fade-up">
+                                            <span className="slide-category">{slide.category}</span>
+                                            <h2 className="slide-title"><a href={slide.link}>{slide.title}</a></h2>
+                                            <div className="slide-meta">
+                                                <span>{slide.date}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <h4 className="sidebar-title">{item.title}</h4>
                                 </div>
+                            ))}
+
+                            <div className="slider-controls">
+                                <button onClick={prevSlide} className="control-btn prev" aria-label="Previous Slide">❮</button>
+                                <button onClick={nextSlide} className="control-btn next" aria-label="Next Slide">❯</button>
                             </div>
-                        ))}
-                    </div>
+
+                            <div className="slider-dots">
+                                {slides.map((_, idx) => (
+                                    <span
+                                        key={idx}
+                                        className={`dot ${idx === currentSlide ? 'active' : ''}`}
+                                        onClick={() => setCurrentSlide(idx)}
+                                    ></span>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="no-slides-message">No trending posts available.</div>
+                    )}
+                </div>
+
+                {/* Right Column: Featured Post, Announcements, Upcoming Events */}
+                {/* This section was missing in the original code, adding a placeholder structure */}
+                <div className="hero-sidebar">
+                    {featuredPost && (
+                        <div className="featured-post">
+                            <h3>Featured Post</h3>
+                            <img src={featuredPost.image} alt={featuredPost.title} />
+                            <h4><a href={featuredPost.link}>{featuredPost.title}</a></h4>
+                            <p>{featuredPost.date}</p>
+                        </div>
+                    )}
+
+                    {announcements.length > 0 && (
+                        <div className="announcements-section">
+                            <h3>Announcements</h3>
+                            <ul>
+                                {announcements.map(announcement => (
+                                    <li key={announcement.id}>
+                                        <span>{announcement.time}</span> - {announcement.text}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
+                    {upcomingEvents.length > 0 && (
+                        <div className="events-section">
+                            <h3>Upcoming Events</h3>
+                            <ul>
+                                {upcomingEvents.map(event => (
+                                    <li key={event.id}>
+                                        <div className="event-date">
+                                            <span className="day">{event.day}</span>
+                                            <span className="month">{event.month}</span>
+                                        </div>
+                                        <div className="event-details">
+                                            <h4>{event.title}</h4>
+                                            <p>{event.location}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
 
             </div>
-        </div>
-    )
-}
+        </section>
+    );
+};
 
-export default Hero
+export default Hero;
